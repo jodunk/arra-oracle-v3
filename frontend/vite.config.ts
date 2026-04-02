@@ -15,10 +15,19 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(appVersion)
   },
   server: {
+    host: '0.0.0.0', // Listen on all interfaces (IPv4 + IPv4)
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:47778'
+        target: 'http://localhost:47778',
+        changeOrigin: true,
+        secure: false, // Accept self-signed cert
+        ws: true, // Proxy WebSocket
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] ${req.method} ${req.url} → ${options.target}${req.url}`);
+          });
+        }
       }
     }
   }

@@ -4,7 +4,7 @@
  */
 
 export const ORACLE_DEFAULT_PORT = 47778;
-export const ORACLE_DATA_DIR_NAME = '.arra-oracle-v2';
+export const ORACLE_DATA_DIR_NAME = '.arra-oracle-v3';
 export const ORACLE_DB_FILE = 'oracle.db';
 export const FEED_LOG_FILE = 'feed.log';
 export const PLUGINS_DIR_NAME = 'plugins';

@@ -33,6 +33,10 @@ import { registerTraceRoutes } from './routes/traces.ts';
 import { registerKnowledgeRoutes } from './routes/knowledge.ts';
 import { registerSupersedeRoutes } from './routes/supersede.ts';
 import { registerFileRoutes } from './routes/files.ts';
+import { registerStreamRoutes } from './routes/stream.ts';
+import { registerGatewayRoutes } from './routes/gateway.ts';
+import { registerEventsRoutes } from './routes/events.ts';
+import { initializeEventSourcing } from './server/events/index.ts';
 
 // Reset stale indexing status on startup using Drizzle
 try {
@@ -104,6 +108,12 @@ registerTraceRoutes(app);
 registerKnowledgeRoutes(app);
 registerSupersedeRoutes(app);
 registerFileRoutes(app);
+registerStreamRoutes(app);
+registerGatewayRoutes(app);
+registerEventsRoutes(app);
+
+// Initialize event sourcing system
+await initializeEventSourcing();
 
 // Startup banner
 console.log(`
@@ -132,6 +142,26 @@ console.log(`
    - GET  /api/supersede       List supersessions
    - GET  /api/supersede/chain/:path  Document lineage
    - POST /api/supersede       Log supersession
+
+   Real-time Streaming:
+   - GET  /api/stream          SSE event stream
+   - GET  /api/stream/stats    Streaming stats
+
+   Gateway (Server-owned WebSocket):
+   - GET  /api/gateway/status  Connection status
+   - POST /api/gateway/message Send message to Gateway
+   - POST /api/gateway/chat    Send chat message
+   - POST /api/gateway/search  Search via Gateway
+   - GET  /api/gateway/agents  List agents
+   - GET  /api/gateway/health  Health check
+
+   Event Sourcing:
+   - GET  /api/events/stats   Event statistics
+   - GET  /api/events         Query events
+   - GET  /api/projections    List projections
+   - POST /api/events/migrate Migrate existing data
+   - GET  /api/events/memory  Memory projection
+   - GET  /api/events/memory/at?timestamp=... Time travel query
 `);
 
 export default {

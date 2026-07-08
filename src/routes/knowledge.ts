@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { REPO_ROOT } from '../config.ts';
 import { handleLearn } from '../server/handlers.ts';
+import { events } from '../server/events/index.ts';
 
 export function registerKnowledgeRoutes(app: Hono) {
   // Learn
@@ -24,6 +25,27 @@ export function registerKnowledgeRoutes(app: Hono) {
         data.project,  // ghq-style project path (null = universal)
         data.cwd       // Auto-detect project from cwd
       );
+
+      // Create Event Sourcing event after successful learning
+      if (result.success && result.id) {
+        try {
+          await events.learningCreated(
+            result.id,
+            data.pattern,
+            data.concepts || [],
+            {
+              source: data.source || 'api',
+              origin: data.origin,
+              project: data.project,
+              agentId: data.agentId || 'api',
+            }
+          );
+        } catch (eventError) {
+          // Log event error but don't fail the learning
+          console.error('Failed to create learning event:', eventError);
+        }
+      }
+
       return c.json(result);
     } catch (error) {
       return c.json({

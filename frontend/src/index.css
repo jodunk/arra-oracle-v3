@@ -1,15 +1,51 @@
+/* OpenClaw Studio Theme - Font Integration */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
 :root {
+  /* OpenClaw Studio Color Palette */
   --bg-primary: #0a0a0f;
   --bg-secondary: #0f0f1a;
-  --bg-card: #1a1a2e;
-  --border: #2a2a3a;
-  --text-primary: #e0e0e0;
-  --text-secondary: #888;
-  --text-muted: #666;
-  --accent: #a78bfa;
-  --accent-hover: #6d28d9;
+  --bg-tertiary: #1a1a2e;
+  --bg-card: #151520;
+  --bg-elevated: #1e1e2d;
+
+  --border-subtle: #1a1a2e;
+  --border-default: #2a2a3a;
+  --border-strong: #3a3a4a;
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0b0;
+  --text-tertiary: #707080;
+  --text-muted: #505060;
+
+  /* Accent Colors */
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+
+  /* Status Colors */
   --success: #4ade80;
   --warning: #fbbf24;
+  --error: #f87171;
+  --info: #60a5fa;
+
+  /* OpenClaw Orange Brand */
+  --brand: #f97316;
+  --brand-hover: #ea580c;
+
+  /* Font Families */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+/* Dark Mode */
+.dark {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #0f0f1a;
+  --bg-tertiary: #1a1a2e;
 }
 
 * {
@@ -19,11 +55,60 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  font-size: 2.5rem;
+}
+
+h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
 }
 
 a {

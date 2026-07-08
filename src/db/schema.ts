@@ -5,7 +5,7 @@
  * then cleaned up to exclude FTS5 internal tables.
  */
 
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index, real } from 'drizzle-orm/sqlite-core';
 
 // Main document index table
 export const oracleDocuments = sqliteTable('oracle_documents', {
@@ -24,12 +24,22 @@ export const oracleDocuments = sqliteTable('oracle_documents', {
   origin: text('origin'),                   // 'mother' | 'arthur' | 'volt' | 'human' | null (legacy)
   project: text('project'),                 // ghq-style: 'github.com/laris-co/arra-oracle'
   createdBy: text('created_by'),            // 'indexer' | 'arra_learn' | 'manual'
+
+  // Meta Alchemist Quality Gates (Phase 1)
+  qualityTier: text('quality_tier'),       // 'operational' | 'behavioral' | 'cognitive'
+  promotionLevel: text('promotion_level'), // 'draft' | 'candidate' | 'promoted' | 'benchmark' | 'realworld_validated'
+  packetStructure: text('packet_structure'), // JSON: {claim, mechanism, boundary, contradiction}
+  usedInDecisions: integer('used_in_decisions').default(0), // Usage count for UCB1
+  lastUsedAt: integer('last_used_at'),      // Timestamp of last recommendation
+  averageRating: real('average_rating'),    // UCB1 score (0-5)
 }, (table) => [
   index('idx_source').on(table.sourceFile),
   index('idx_type').on(table.type),
   index('idx_superseded').on(table.supersededBy),
   index('idx_origin').on(table.origin),
   index('idx_project').on(table.project),
+  index('idx_promotion_level').on(table.promotionLevel),
+  index('idx_quality_tier').on(table.qualityTier),
 ]);
 
 // Indexing status tracking
@@ -273,3 +283,26 @@ export const settings = sqliteTable('settings', {
   value: text('value'),
   updatedAt: integer('updated_at').notNull(),
 });
+
+// ============================================================================
+// Decision Journal (Phase 2) - Track decisions with packet grounding
+// ============================================================================
+
+export const decisionJournal = sqliteTable('decision_journal', {
+  id: text('id').primaryKey(),
+  timestamp: integer('timestamp').notNull(),
+  situation: text('situation').notNull(),
+  choice: text('choice').notNull(),
+  packetIds: text('packet_ids').notNull(), // JSON array of packet IDs used
+  rationale: text('rationale'),
+  outcome: text('outcome'), // 'pending' | 'success' | 'failure' | 'mixed'
+  outcomeNotes: text('outcome_notes'),
+  learned: text('learned'), // New insights from this decision
+  project: text('project'),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+}, (table) => [
+  index('idx_decision_project').on(table.project),
+  index('idx_decision_outcome').on(table.outcome),
+  index('idx_decision_timestamp').on(table.timestamp),
+]);

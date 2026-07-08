@@ -39,6 +39,8 @@ import {
   handleThread, handleThreads, handleThreadRead, handleThreadUpdate,
   traceToolDefs,
   handleTrace, handleTraceList, handleTraceGet, handleTraceLink, handleTraceUnlink, handleTraceChain,
+  recordDecisionToolDef, handleRecordDecision,
+  updateOutcomeToolDef, handleUpdateOutcome,
 } from './tools/index.ts';
 
 import type {
@@ -51,6 +53,8 @@ import type {
   OracleHandoffInput,
   OracleInboxInput,
   OracleReadInput,
+  OracleRecordDecisionInput,
+  OracleUpdateOutcomeInput,
   OracleThreadInput,
   OracleThreadsInput,
   OracleThreadReadInput,
@@ -71,6 +75,8 @@ const WRITE_TOOLS = [
   'arra_trace',
   'arra_supersede',
   'arra_handoff',
+  'arra_record_decision',
+  'arra_update_outcome',
 ];
 
 class OracleMCPServer {
@@ -189,6 +195,9 @@ class OracleMCPServer {
         supersedeToolDef,
         handoffToolDef,
         inboxToolDef,
+        // Decision Journal (Meta Alchemist Phase 2)
+        recordDecisionToolDef,
+        updateOutcomeToolDef,
       ];
 
       let tools = allTools.filter(t => !this.disabledTools.has(t.name));
@@ -246,6 +255,11 @@ class OracleMCPServer {
             return await handleHandoff(ctx, request.params.arguments as unknown as OracleHandoffInput);
           case 'arra_inbox':
             return await handleInbox(ctx, request.params.arguments as unknown as OracleInboxInput);
+          // Decision Journal (Meta Alchemist Phase 2)
+          case 'arra_record_decision':
+            return await handleRecordDecision(ctx, request.params.arguments as unknown as OracleRecordDecisionInput);
+          case 'arra_update_outcome':
+            return await handleUpdateOutcome(ctx, request.params.arguments as unknown as OracleUpdateOutcomeInput);
           // Forum tools (delegated to src/tools/forum.ts)
           case 'arra_thread':
             return await handleThread(request.params.arguments as unknown as OracleThreadInput);

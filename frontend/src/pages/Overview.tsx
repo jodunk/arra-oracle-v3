@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getStats, reflect, stripProjectPrefix } from '../api/oracle';
 import type { Document, Stats } from '../api/oracle';
+import { LobsterMascot } from '../components/LobsterMascot';
 import styles from './Overview.module.css';
 
 export function Overview() {
@@ -54,8 +55,13 @@ export function Overview() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Oracle Overview</h1>
-      <p className={styles.subtitle}>Your knowledge base at a glance</p>
+      <div className={styles.headerSection}>
+        <div>
+          <h1 className={styles.title}>Oracle Overview</h1>
+          <p className={styles.subtitle}>Your knowledge base at a glance</p>
+        </div>
+        <LobsterMascot size={64} className={styles.mascot} />
+      </div>
 
       {connectionError && (
         <div style={{

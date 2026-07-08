@@ -16,6 +16,8 @@ export type {
   OracleHandoffInput,
   OracleInboxInput,
   OracleReadInput,
+  OracleRecordDecisionInput,
+  OracleUpdateOutcomeInput,
 } from './types.ts';
 
 // Search (+ pure helpers)
@@ -83,4 +85,15 @@ export {
   handleTraceUnlink,
   handleTraceChain,
 } from './trace.ts';
+
+// Decision Journal (+ UCB1 algorithm)
+export {
+  recordDecisionToolDef,
+  updateOutcomeToolDef,
+  handleRecordDecision,
+  handleUpdateOutcome,
+  calculateUCB1,
+  recommendPackets,
+  checkPromotion,
+} from './decision.ts';
 

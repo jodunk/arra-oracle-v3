@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getSettings, updateSettings, type Settings as SettingsType } from '../api/oracle';
 import { useAuth } from '../contexts/AuthContext';
+import { Avatar } from '../components/Avatar';
+import { LobsterMascot } from '../components/LobsterMascot';
 import styles from './Settings.module.css';
 
 export function Settings() {
@@ -154,6 +156,20 @@ export function Settings() {
     <div className={styles.container}>
       <h1 className={styles.title}>Settings</h1>
       <p className={styles.subtitle}>Configure authentication and security options</p>
+
+      {/* User Profile Section */}
+      <div className={styles.profileSection}>
+        <Avatar
+          name="Oracle User"
+          size={64}
+          variant="circle"
+        />
+        <div className={styles.profileInfo}>
+          <h2 className={styles.profileName}>Oracle User</h2>
+          <p className={styles.profileRole}>Administrator</p>
+        </div>
+        <LobsterMascot size={80} className={styles.mascot} />
+      </div>
 
       {message && (
         <div className={`${styles.message} ${styles[message.type]}`}>

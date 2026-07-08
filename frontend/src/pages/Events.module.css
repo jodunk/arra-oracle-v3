@@ -7,7 +7,7 @@
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #888;
+  color: var(--text-muted);
 }
 
 .header {
@@ -18,16 +18,16 @@
   font-size: 1.75rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .subtitle {
-  color: #888;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .activeCount {
-  color: #4ade80;
+  color: var(--success);
 }
 
 /* Filters */
@@ -48,7 +48,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #888;
+  color: var(--text-muted);
 }
 
 .filterButtons {
@@ -59,9 +59,9 @@
 
 .filterBtn {
   padding: 0.5rem 1rem;
-  border: 1px solid #333;
-  background: #1a1a1a;
-  color: #888;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-secondary);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.875rem;
@@ -69,21 +69,21 @@
 }
 
 .filterBtn:hover {
-  border-color: #444;
-  color: #fff;
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .filterBtn.active {
-  background: #333;
-  border-color: #555;
-  color: #fff;
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .select {
   padding: 0.5rem 1rem;
-  border: 1px solid #333;
-  background: #1a1a1a;
-  color: #fff;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-primary);
   border-radius: 6px;
   font-size: 0.875rem;
   min-width: 150px;
@@ -97,12 +97,12 @@
 }
 
 .statItem {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
 .statValue {
-  color: #fff;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -110,37 +110,37 @@
 .error {
   text-align: center;
   padding: 2rem;
-  background: #2a1515;
-  border: 1px solid #5a2525;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 8px;
-  color: #f87171;
+  color: var(--error);
   margin-bottom: 1.5rem;
 }
 
 .retryBtn {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: #5a2525;
-  border: none;
-  color: #fff;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--error);
   border-radius: 6px;
   cursor: pointer;
 }
 
 .retryBtn:hover {
-  background: #6a3535;
+  background: rgba(239, 68, 68, 0.3);
 }
 
 /* Empty State */
 .empty {
   text-align: center;
   padding: 3rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .emptyHint {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-muted);
   margin-top: 0.5rem;
 }
 
@@ -155,14 +155,14 @@
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   transition: border-color 0.2s;
 }
 
 .eventCard:hover {
-  border-color: #3a3a3a;
+  border-color: var(--border-strong);
 }
 
 .eventIcon {
@@ -173,7 +173,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #252525;
+  background: var(--bg-elevated);
   border-radius: 8px;
 }
 
@@ -192,27 +192,27 @@
 
 .oracleName {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .eventType {
   padding: 0.125rem 0.5rem;
-  background: #333;
+  background: var(--bg-tertiary);
   border-radius: 4px;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #aaa;
+  color: var(--text-tertiary);
 }
 
 .eventTime {
-  color: #666;
+  color: var(--text-muted);
   font-size: 0.875rem;
   margin-left: auto;
 }
 
 .eventMessage {
-  color: #ccc;
+  color: var(--text-secondary);
   margin: 0 0 0.5rem 0;
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -226,7 +226,10 @@
 }
 
 .metaItem {
-  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
   font-size: 0.75rem;
 }
 
@@ -236,9 +239,9 @@
   width: 100%;
   padding: 1rem;
   margin-top: 1.5rem;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  color: #888;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.875rem;
@@ -246,6 +249,275 @@
 }
 
 .loadMore:hover {
-  border-color: #444;
-  color: #fff;
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--brand);
+}
+
+/* Projections */
+.projectionsList {
+  display: grid;
+  gap: 1rem;
+}
+
+.projectionCard {
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+}
+
+.projectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.projectionName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.projectionTime {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.projectionInfo {
+  margin-bottom: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.infoLabel {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.infoValue {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-family: var(--font-mono);
+}
+
+.projectionState {
+  margin-bottom: 1rem;
+}
+
+.projectionActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  gap: 2rem;
+}
+
+.statCard {
+  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statsByType {
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+}
+
+.statsTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.typeStat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.typeStat:last-child {
+  border-bottom: none;
+}
+
+.typeIcon {
+  font-size: 1.25rem;
+}
+
+.typeName {
+  flex: 1;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.typeCount {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.eventData {
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .filters {
+    gap: 1rem;
+  }
+
+  .filterButtons {
+    width: 100%;
+  }
+
+  .filterBtn {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .eventCard {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .eventIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .eventHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .eventTime {
+    margin-left: 0;
+    font-size: 0.75rem;
+  }
+
+  .tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .statValue {
+    font-size: 2rem;
+  }
+
+  .projectionActions {
+    flex-direction: column;
+  }
+
+  .actionBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .eventCard {
+    padding: 0.75rem;
+  }
+
+  .statCard {
+    padding: 1.5rem;
+  }
+
+  .statValue {
+    font-size: 1.75rem;
+  }
+
+  .statsByType {
+    padding: 1rem;
+  }
 }

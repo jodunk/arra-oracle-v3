@@ -16,6 +16,38 @@
   margin-bottom: 32px;
 }
 
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.profileName {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.profileRole {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.mascot {
+  margin-left: auto;
+  filter: drop-shadow(0 4px 8px rgba(249, 115, 22, 0.3));
+}
+
 .loading {
   text-align: center;
   color: var(--text-muted);

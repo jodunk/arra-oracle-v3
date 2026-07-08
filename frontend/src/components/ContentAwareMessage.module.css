@@ -1,0 +1,131 @@
+/**
+ * Content-Aware Message Styles
+ * Based on OpenClaw Studio pattern
+ */
+
+.container {
+  /* Performance optimization: skip rendering if not visible */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
+
+  /* Smooth transitions for width changes */
+  transition: max-width 0.2s ease-out;
+
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Narrow: Optimal reading width for plain text (65ch ≈ 780px at 12px font) */
+.narrow {
+  max-width: 65ch;
+  padding: 0.75rem 1rem;
+}
+
+/* Wide: Full width for code blocks, diagrams, tables */
+.wide {
+  max-width: 100%;
+  padding: 1rem;
+  overflow-x: auto; /* Allow horizontal scroll for wide code */
+}
+
+/* Variant: Default (plain container) */
+.default {
+  border-radius: 0;
+}
+
+/* Variant: Card (elevated surface) */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Variant: Bubble (chat-style) */
+.bubble {
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.bubble.narrow {
+  border-bottom-left-radius: 2px;
+}
+
+.bubble.wide {
+  border-radius: 8px;
+}
+
+/* User message styling */
+.user-message {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-bottom-right-radius: 2px;
+  margin-left: auto;
+  max-width: 65ch;
+}
+
+/* Assistant/Oracle message styling */
+.assistant-message {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 2px;
+}
+
+.assistant-message.wide {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* System message styling */
+.system-message {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.875em;
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* Code message styling */
+.code-message {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875em;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Error message styling */
+.error-message {
+  background: color-mix(in oklch, var(--bg-primary), oklch(60% 0.18 25) 15%);
+  border: 1px solid color-mix(in oklch, var(--bg-primary), oklch(60% 0.18 25) 30%);
+  color: oklch(75% 0.18 25);
+  border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .narrow,
+  .wide {
+    padding: 0.75rem;
+  }
+
+  .user-message,
+  .assistant-message {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .container {
+    content-visibility: visible;
+  }
+
+  .bubble,
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}

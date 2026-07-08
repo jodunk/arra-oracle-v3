@@ -55,6 +55,17 @@ export const searchToolDef = {
         type: 'string',
         enum: ['nomic', 'qwen3', 'bge-m3'],
         description: 'Embedding model: bge-m3 (default, multilingual Thai↔EN, 1024-dim), nomic (fast, 768-dim), or qwen3 (cross-language, 4096-dim)',
+      },
+      qualityTier: {
+        type: 'string',
+        enum: ['operational', 'behavioral', 'cognitive', 'all'],
+        description: 'Filter by quality tier (Meta Alchemist Quality Gates)',
+        default: 'all'
+      },
+      promotionLevel: {
+        type: 'string',
+        enum: ['draft', 'candidate', 'promoted', 'benchmark', 'realworld_validated'],
+        description: 'Filter by promotion level'
       }
     },
     required: ['query']
@@ -309,7 +320,7 @@ export function combineResults(
 
 export async function handleSearch(ctx: ToolContext, input: OracleSearchInput): Promise<ToolResponse> {
   const startTime = Date.now();
-  const { query, type = 'all', limit = 5, offset = 0, mode = 'hybrid', project, cwd, model } = input;
+  const { query, type = 'all', limit = 5, offset = 0, mode = 'hybrid', project, cwd, model, qualityTier, promotionLevel } = input;
 
   if (!query || query.trim().length === 0) {
     throw new Error('Query cannot be empty');
@@ -327,6 +338,19 @@ export async function handleSearch(ctx: ToolContext, input: OracleSearchInput): 
     : '';
   const projectParams = resolvedProject ? [resolvedProject] : [];
 
+  // Meta Alchemist Quality Gates (Phase 1.5)
+  const qualityFilters: string[] = [];
+  if (qualityTier && qualityTier !== 'all') {
+    qualityFilters.push('AND d.quality_tier = ?');
+  }
+  if (promotionLevel) {
+    qualityFilters.push('AND d.promotion_level = ?');
+  }
+  const qualityFilter = qualityFilters.join(' ');
+  const qualityParams: (string | number)[] = [];
+  if (qualityTier && qualityTier !== 'all') qualityParams.push(qualityTier);
+  if (promotionLevel) qualityParams.push(promotionLevel);
+
   let warning: string | undefined;
   let vectorSearchError = false;
 
@@ -338,21 +362,21 @@ export async function handleSearch(ctx: ToolContext, input: OracleSearchInput): 
         SELECT f.id, f.content, d.type, d.source_file, d.concepts, rank
         FROM oracle_fts f
         JOIN oracle_documents d ON f.id = d.id
-        WHERE oracle_fts MATCH ? ${projectFilter}
+        WHERE oracle_fts MATCH ? ${projectFilter} ${qualityFilter}
         ORDER BY rank
         LIMIT ?
       `);
-      ftsRawResults = stmt.all(safeQuery, ...projectParams, limit * 2);
+      ftsRawResults = stmt.all(safeQuery, ...projectParams, ...qualityParams, limit * 2);
     } else {
       const stmt = ctx.sqlite.prepare(`
         SELECT f.id, f.content, d.type, d.source_file, d.concepts, rank
         FROM oracle_fts f
         JOIN oracle_documents d ON f.id = d.id
-        WHERE oracle_fts MATCH ? AND d.type = ? ${projectFilter}
+        WHERE oracle_fts MATCH ? AND d.type = ? ${projectFilter} ${qualityFilter}
         ORDER BY rank
         LIMIT ?
       `);
-      ftsRawResults = stmt.all(safeQuery, type, ...projectParams, limit * 2);
+      ftsRawResults = stmt.all(safeQuery, type, ...projectParams, ...qualityParams, limit * 2);
     }
   }
 

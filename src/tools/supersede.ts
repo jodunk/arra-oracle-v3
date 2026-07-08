@@ -6,7 +6,7 @@
  */
 
 import { eq } from 'drizzle-orm';
-import { oracleDocuments } from '../db/schema.ts';
+import { oracleDocuments, supersedeLog } from '../db/schema.ts';
 import type { ToolContext, ToolResponse, OracleSupersededInput } from './types.ts';
 
 export const supersedeToolDef = {
@@ -36,11 +36,21 @@ export async function handleSupersede(ctx: ToolContext, input: OracleSupersededI
   const { oldId, newId, reason } = input;
   const now = Date.now();
 
-  const oldDoc = ctx.db.select({ id: oracleDocuments.id, type: oracleDocuments.type })
+  const oldDoc = ctx.db.select({
+    id: oracleDocuments.id,
+    type: oracleDocuments.type,
+    sourceFile: oracleDocuments.sourceFile,
+    project: oracleDocuments.project,
+  })
     .from(oracleDocuments)
     .where(eq(oracleDocuments.id, oldId))
     .get();
-  const newDoc = ctx.db.select({ id: oracleDocuments.id, type: oracleDocuments.type })
+  const newDoc = ctx.db.select({
+    id: oracleDocuments.id,
+    type: oracleDocuments.type,
+    sourceFile: oracleDocuments.sourceFile,
+    project: oracleDocuments.project,
+  })
     .from(oracleDocuments)
     .where(eq(oracleDocuments.id, newId))
     .get();
@@ -48,6 +58,7 @@ export async function handleSupersede(ctx: ToolContext, input: OracleSupersededI
   if (!oldDoc) throw new Error(`Old document not found: ${oldId}`);
   if (!newDoc) throw new Error(`New document not found: ${newId}`);
 
+  // Update oracle_documents table
   ctx.db.update(oracleDocuments)
     .set({
       supersededBy: newId,
@@ -56,6 +67,21 @@ export async function handleSupersede(ctx: ToolContext, input: OracleSupersededI
     })
     .where(eq(oracleDocuments.id, oldId))
     .run();
+
+  // Also insert into supersede_log for Evolution page tracking
+  ctx.db.insert(supersedeLog).values({
+    oldPath: oldDoc.sourceFile,
+    oldId: oldId,
+    oldType: oldDoc.type,
+    oldTitle: null, // Could extract from content if needed
+    newPath: newDoc.sourceFile,
+    newId: newId,
+    newTitle: null,
+    reason: reason || null,
+    supersededAt: now,
+    supersededBy: 'user',
+    project: oldDoc.project || null,
+  }).run();
 
   console.error(`[MCP:SUPERSEDE] ${oldId} → superseded by → ${newId}`);
 

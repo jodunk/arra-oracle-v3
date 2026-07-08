@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arra Oracle - Dashboard Prototype (OpenClaw Design)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+        :root {
+            /* OpenClaw Studio Color Palette */
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #0f0f1a;
+            --bg-tertiary: #1a1a2e;
+            --bg-card: #151520;
+            --bg-elevated: #1e1e2d;
+
+            --border-subtle: #1a1a2e;
+            --border-default: #2a2a3a;
+            --border-strong: #3a3a4a;
+
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0b0;
+            --text-tertiary: #707080;
+            --text-muted: #505060;
+
+            /* Accent Colors */
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+
+            /* Status Colors */
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+
+            /* Brand (OpenClaw Orange) */
+            --brand: #f97316;
+            --brand-hover: #ea580c;
+
+            /* Fonts */
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-sans: 'IBM Plex Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+
+            /* Transitions */
+            --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+            --duration-fast: 150ms;
+            --duration-normal: 200ms;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .logo span {
+            font-size: 10px;
+            background: var(--bg-card);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--brand);
+        }
+
+        .nav {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s var(--ease-out);
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid var(--brand);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-2xl) var(--space-lg);
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: var(--space-xl);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            margin-bottom: var(--space-sm);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            transition: all 0.2s var(--ease-out);
+            animation: rise 0.3s var(--ease-out) backwards;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-strong);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0ms; }
+        .stat-card:nth-child(2) { animation-delay: 50ms; }
+        .stat-card:nth-child(3) { animation-delay: 100ms; }
+        .stat-card:nth-child(4) { animation-delay: 150ms; }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .stat-icon {
+            font-size: 20px;
+            opacity: 0.5;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-value.success { color: var(--success); }
+        .stat-value.info { color: var(--info); }
+        .stat-value.warning { color: var(--warning); }
+
+        .stat-change {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--error); }
+
+        /* Section */
+        .section {
+            margin-bottom: var(--space-xl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            transition: all 0.2s var(--ease-out);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            border-color: var(--border-strong);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .card-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .card-body {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: var(--space-md);
+        }
+
+        .card-footer {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        /* Chips */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+        }
+
+        .chip.success {
+            color: var(--success);
+            border-color: rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .chip.info {
+            color: var(--info);
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .chip.warning {
+            color: var(--warning);
+            border-color: rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        /* Activity List */
+        .activity-list {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.2s;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--brand);
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .activity-dot.success { background: var(--success); }
+        .activity-dot.error { background: var(--error); }
+        .activity-dot.info { background: var(--info); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-default);
+            background: var(--bg-elevated);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-strong);
+        }
+
+        .btn.primary {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background: var(--brand-hover);
+            border-color: var(--brand-hover);
+        }
+
+        .btn.sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .toggle-switch {
+            width: 48px;
+            height: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .toggle-switch.active {
+            background: var(--brand);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+        }
+
+        /* Loading State */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-elevated) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            🔮 Oracle <span>v3.1</span>
+        </div>
+        <nav class="nav">
+            <a class="nav-link active" data-page="dashboard">Dashboard</a>
+            <a class="nav-link" data-page="agents">Agents</a>
+            <a class="nav-link" data-page="events">Events</a>
+            <a class="nav-link" data-page="knowledge">Knowledge</a>
+            <a class="nav-link" data-page="settings">Settings</a>
+        </nav>
+        <div class="user-avatar" title="Oracle User">JO</div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard Page -->
+        <div id="page-dashboard" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Oracle Dashboard</h1>
+                <p class="page-subtitle">Your knowledge base at a glance</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Documents</span>
+                        <span class="stat-icon">📄</span>
+                    </div>
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-change positive">+12% from last week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Learnings</span>
+                        <span class="stat-icon">💡</span>
+                    </div>
+                    <div class="stat-value success">567</div>
+                    <div class="stat-change positive">+8% from last week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Active Agents</span>
+                        <span class="stat-icon">🤖</span>
+                    </div>
+                    <div class="stat-value info">12</div>
+                    <div class="stat-change">3 running tasks</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">System Status</span>
+                        <span class="stat-icon">✓</span>
+                    </div>
+                    <div class="stat-value success">Healthy</div>
+                    <div class="stat-change">All systems operational</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                    <span class="badge active">Live</span>
+                </div>
+
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-dot success"></div>
+                        <div class="activity-content">
+                            <div class="activity-title">New pattern learned: MCP Integration</div>
+                            <div class="activity-time">2 minutes ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-dot info"></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Atlas completed market analysis task</div>
+                            <div class="activity-time">15 minutes ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Iya started new research thread</div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-dot success"></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Knowledge base synchronized</div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Agents -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Active Agents</h2>
+                    <button class="btn sm">View All</button>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-avatar">AT</div>
+                            <div class="card-content">
+                                <h3 class="card-title">Atlas</h3>
+                                <p class="card-subtitle">Research & Analysis</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            Analyzing market trends and preparing reports for trade decisions.
+                        </div>
+                        <div class="card-footer">
+                            <span class="chip success">Active</span>
+                            <span class="chip">research</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-avatar">IY</div>
+                            <div class="card-content">
+                                <h3 class="card-title">Iya</h3>
+                                <p class="card-subtitle">Trading Oracle</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            Monitoring market conditions and evaluating trading strategies.
+                        </div>
+                        <div class="card-footer">
+                            <span class="chip success">Active</span>
+                            <span class="chip">trading</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-avatar">SC</div>
+                            <div class="card-content">
+                                <h3 class="card-title">Scudd</h3>
+                                <p class="card-subtitle">Quant Research</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            Running backtests and optimizing strategy parameters.
+                        </div>
+                        <div class="card-footer">
+                            <span class="chip warning">Busy</span>
+                            <span class="chip">backtest</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agents Page -->
+        <div id="page-agents" class="page" style="display: none;">
+            <div class="page-header">
+                <h1 class="page-title">Virtual Office Agents</h1>
+                <p class="page-subtitle">Meet your AI research team</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-avatar" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">AT</div>
+                        <div class="card-content">
+                            <h3 class="card-title">Atlas</h3>
+                            <p class="card-subtitle">Research Lead</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Expert in market research, trend analysis, and competitive intelligence. Leads research initiatives across all trading strategies.
+                    </div>
+                    <div class="card-footer">
+                        <span class="chip success">Online</span>
+                        <span class="chip">research</span>
+                        <span class="chip">analysis</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-avatar" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">IY</div>
+                        <div class="card-content">
+                            <h3 class="card-title">Iya</h3>
+                            <p class="card-subtitle">Trading Oracle</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Specializes in quantitative trading, grid strategies, and market microstructure. Your primary research partner for trading systems.
+                    </div>
+                    <div class="card-footer">
+                        <span class="chip success">Online</span>
+                        <span class="chip">trading</span>
+                        <span class="chip">strategies</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">SC</div>
+                        <div class="card-content">
+                            <h3 class="card-title">Scudd</h3>
+                            <p class="card-subtitle">Quant Research</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Focuses on backtesting, statistical analysis, and strategy optimization. Ensures all trading strategies meet rigorous quality standards.
+                    </div>
+                    <div class="card-footer">
+                        <span class="chip warning">Busy</span>
+                        <span class="chip">backtest</span>
+                        <span class="chip">stats</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">IR</div>
+                        <div class="card-content">
+                            <h3 class="card-title">Iris</h3>
+                            <p class="card-subtitle">Frontend Lead</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Expert in UI/UX design, frontend architecture, and user experience. Craftsmen of beautiful, functional interfaces.
+                    </div>
+                    <div class="card-footer">
+                        <span class="chip success">Online</span>
+                        <span class="chip">frontend</span>
+                        <span class="chip">design</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-avatar" style="background: linear-gradient(135deg, #ef4444, #dc2626);">FL</div>
+                        <div class="card-content">
+                            <h3 class="card-title">Flux</h3>
+                            <p class="card-subtitle">Integration</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Handles system integrations, API connections, and data pipelines. Keeps everything connected and flowing smoothly.
+                    </div>
+                    <div class="card-footer">
+                        <span class="chip success">Online</span>
+                        <span class="chip">integration</span>
+                        <span class="chip">api</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-avatar" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">ED</div>
+                        <div class="card-content">
+                            <h3 class="card-title">Edge</h3>
+                            <p class="card-subtitle">Risk Manager</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Monitors risk exposure, position sizing, and portfolio balance. Ensures responsible risk management at all times.
+                    </div>
+                    <div class="card-footer">
+                        <span class="chip">Offline</span>
+                        <span class="chip">risk</span>
+                        <span class="chip">portfolio</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Page -->
+        <div id="page-events" class="page" style="display: none;">
+            <div class="page-header">
+                <h1 class="page-title">Event Log</h1>
+                <p class="page-subtitle">Trace all Oracle activities</p>
+            </div>
+
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-dot success"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Atlas: Market analysis completed</div>
+                        <div class="activity-time">2 minutes ago • Research</div>
+                    </div>
+                    <span class="chip">research</span>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-dot info"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Iya: Strategy optimization started</div>
+                        <div class="activity-time">15 minutes ago • Trading</div>
+                    </div>
+                    <span class="chip">trading</span>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-dot"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">System: Knowledge synchronized</div>
+                        <div class="activity-time">1 hour ago • System</div>
+                    </div>
+                    <span class="chip">system</span>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-dot error"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Scudd: Backtest failed - insufficient data</div>
+                        <div class="activity-time">2 hours ago • Research</div>
+                    </div>
+                    <span class="chip">error</span>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-dot success"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Iya: New pattern learned - Grid spacing optimization</div>
+                        <div class="activity-time">3 hours ago • Learning</div>
+                    </div>
+                    <span class="chip">learning</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Page -->
+        <div id="page-knowledge" class="page" style="display: none;">
+            <div class="page-header">
+                <h1 class="page-title">Knowledge Base</h1>
+                <p class="page-subtitle">Search and explore accumulated wisdom</p>
+            </div>
+
+            <div class="section">
+                <div style="margin-bottom: var(--space-lg);">
+                    <input
+                        type="text"
+                        placeholder="Search knowledge base..."
+                        style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-default); background: var(--bg-card); border-radius: 8px; color: var(--text-primary); font-size: 16px;"
+                    >
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-avatar" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">📝</div>
+                            <div class="card-content">
+                                <h3 class="card-title">Patterns</h3>
+                                <p class="card-subtitle">567 documents</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            Reusable patterns and solutions discovered through research and experience.
+                        </div>
+                        <div class="card-footer">
+                            <span class="chip">mcp</span>
+                            <span class="chip">testing</span>
+                            <span class="chip">design</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">💡</div>
+                            <div class="card-content">
+                                <h3 class="card-title">Learnings</h3>
+                                <p class="card-subtitle">1,234 entries</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            Lessons learned and insights from trading strategies and system development.
+                        </div>
+                        <div class="card-footer">
+                            <span class="chip">trading</span>
+                            <span class="chip">strategies</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🔮</div>
+                            <div class="card-content">
+                                <h3 class="card-title">Retrospectives</h3>
+                                <p class="card-subtitle">89 sessions</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            Session reflections and reviews for continuous improvement.
+                        </div>
+                        <div class="card-footer">
+                            <span class="chip">review</span>
+                            <span class="chip">improvement</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="page-settings" class="page" style="display: none;">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Configure Oracle preferences</p>
+            </div>
+
+            <div style="max-width: 600px;">
+                <div class="card" style="margin-bottom: var(--space-md);">
+                    <div class="card-header">
+                        <div class="card-content">
+                            <h3 class="card-title">Authentication</h3>
+                            <p class="card-subtitle">Manage access control</p>
+                        </div>
+                    </div>
+                    <div style="padding: var(--space-md) 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) 0; border-bottom: 1px solid var(--border-subtle);">
+                            <div>
+                                <div style="font-weight: 500;">Enable Authentication</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">Require password to access Oracle</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) 0;">
+                            <div>
+                                <div style="font-weight: 500;">Local Bypass</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">Allow localhost without auth</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-content">
+                            <h3 class="card-title">System</h3>
+                            <p class="card-subtitle">System preferences</p>
+                        </div>
+                    </div>
+                    <div style="padding: var(--space-md) 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) 0; border-bottom: 1px solid var(--border-subtle);">
+                            <div>
+                                <div style="font-weight: 500;">Dark Mode</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">Use dark theme</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) 0;">
+                            <div>
+                                <div style="font-weight: 500;">Notifications</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">Enable desktop notifications</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Update active state
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Show page
+                const pageId = 'page-' + link.dataset.page;
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                document.getElementById(pageId).style.display = 'block';
+            });
+        });
+
+        // Card hover effects
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'var(--border-strong)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'var(--border-default)';
+            });
+        });
+
+        // Activity item hover
+        document.querySelectorAll('.activity-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.style.background = 'var(--bg-tertiary)';
+                setTimeout(() => {
+                    item.style.background = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

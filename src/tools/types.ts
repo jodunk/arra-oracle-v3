@@ -38,6 +38,10 @@ export interface OracleSearchInput {
   project?: string;
   cwd?: string;
   model?: 'nomic' | 'qwen3' | 'bge-m3';
+
+  // Meta Alchemist Quality Gates (Phase 1) - filter by quality
+  qualityTier?: 'operational' | 'behavioral' | 'cognitive' | 'all';  // Default: all
+  promotionLevel?: 'draft' | 'candidate' | 'promoted' | 'benchmark' | 'realworld_validated';  // Filter by level
 }
 
 export interface OracleReflectInput {}
@@ -47,6 +51,14 @@ export interface OracleLearnInput {
   source?: string;
   concepts?: string[];
   project?: string;
+
+  // Meta Alchemist Quality Gates (Phase 1) - all optional
+  claim?: string;           // One-sentence claim
+  mechanism?: string;       // One-sentence mechanism
+  boundary?: string;        // One-sentence boundary
+  contradiction?: string;   // Contradictions with other beliefs
+  qualityTier?: 'operational' | 'behavioral' | 'cognitive';  // Default: cognitive
+  promotionLevel?: 'draft' | 'candidate' | 'promoted' | 'benchmark' | 'realworld_validated';  // Default: candidate
 }
 
 export interface OracleListInput {
@@ -105,3 +117,22 @@ export interface OracleReadInput {
   file?: string;
   id?: string;
 }
+
+// Meta Alchemist Decision Journal (Phase 2)
+export interface OracleRecordDecisionInput {
+  situation: string;      // What problem was being solved
+  choice: string;         // What action was taken
+  packetIds: string[];    // Learning/packet IDs that informed this decision
+  rationale?: string;     // Why these packets
+  project?: string;
+}
+
+export interface OracleUpdateOutcomeInput {
+  decisionId: string;
+  outcome: 'success' | 'failure' | 'mixed';
+  outcomeNotes?: string;
+  learned?: string;
+  // Optional: Rate each packet used (1-5)
+  packetRatings?: { packetId: string; rating: number }[];
+}
+

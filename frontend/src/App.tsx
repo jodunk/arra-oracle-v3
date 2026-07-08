@@ -13,7 +13,7 @@ import { Forum } from './pages/Forum';
 import { Evolution } from './pages/Evolution';
 import { Traces } from './pages/Traces';
 import { Superseded } from './pages/Superseded';
-import { Events } from './pages/Events';
+import Events from './pages/Events';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
 import { Playground } from './pages/Playground';

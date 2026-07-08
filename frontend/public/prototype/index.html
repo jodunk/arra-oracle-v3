@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arra Oracle - Prototypes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            max-width: 900px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+            color: #1a1a2e;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 32px;
+        }
+
+        .card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:hover {
+            border-color: #f97316;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a2e;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f97316;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        .section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .footer a {
+            color: #f97316;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🦞🔮</div>
+            <h1>Arra Oracle Prototypes</h1>
+            <p>Interactive UI mockups with OpenClaw Studio design system</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Main Prototype</div>
+            <div class="grid">
+                <a href="oracle-dashboard.html" class="card">
+                    <div class="card-icon">📊</div>
+                    <h3 class="card-title">Oracle Dashboard</h3>
+                    <p class="card-desc">Complete interactive prototype with dashboard, agents, events, knowledge base, and settings pages.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Reference Mockups</div>
+            <div class="grid">
+                <a href="/mockup/openclaw-dashboard-mockup.html" class="card">
+                    <div class="card-icon">🖼️</div>
+                    <h3 class="card-title">OpenClaw Dashboard</h3>
+                    <p class="card-desc">Static HTML mockup showing OpenClaw Studio design patterns for dashboard pages.</p>
+                </a>
+
+                <a href="/mockup/openclaw-settings-mockup.html" class="card">
+                    <div class="card-icon">⚙️</div>
+                    <h3 class="card-title">OpenClaw Settings</h3>
+                    <p class="card-desc">Static HTML mockup showing OpenClaw Studio design patterns for settings pages.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Actual Applications</div>
+            <div class="grid">
+                <a href="http://localhost:8080/" target="_blank" class="card">
+                    <div class="card-icon">🚀</div>
+                    <h3 class="card-title">OpenClaw Studio <span class="badge">Live</span></h3>
+                    <p class="card-desc">Real OpenClaw Studio Control UI running on port 8080. The actual application.</p>
+                </a>
+
+                <a href="http://localhost:3000/" target="_blank" class="card">
+                    <div class="card-icon">🔮</div>
+                    <h3 class="card-title">Arra Oracle <span class="badge">Live</span></h3>
+                    <p class="card-desc">Current Arra Oracle frontend running on port 3000 with Vite dev server.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Design System Resources</div>
+            <div class="grid">
+                <a href="/openclaw-studio/" class="card">
+                    <div class="card-icon">📁</div>
+                    <h3 class="card-title">OpenClaw Assets</h3>
+                    <p class="card-desc">Built OpenClaw Studio files (via port 3000). All static assets and compiled code.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <a href="https://github.com/openclaw" target="_blank">OpenClaw Studio</a> 🦞</p>
+            <p style="margin-top: 8px;">OpenClaw Orange Brand Color: <span style="color: #f97316; font-weight: 600;">#f97316</span></p>
+        </div>
+    </div>
+</body>
+</html>

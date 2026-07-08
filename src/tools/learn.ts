@@ -146,6 +146,18 @@ export async function handleLearn(ctx: ToolContext, input: OracleLearnInput): Pr
 
   const title = pattern.split('\n')[0].substring(0, 80);
   const conceptsList = coerceConcepts(concepts);
+
+  // Meta Alchemist Quality Gates (Phase 1) - extract atomic fields
+  const qualityTier = input.qualityTier || 'cognitive';
+  const promotionLevel = input.promotionLevel || 'candidate';
+
+  // Build atomic frontmatter fields
+  const atomicFields = [];
+  if (input.claim) atomicFields.push(`claim: ${input.claim}`);
+  if (input.mechanism) atomicFields.push(`mechanism: ${input.mechanism}`);
+  if (input.boundary) atomicFields.push(`boundary: ${input.boundary}`);
+  if (input.contradiction) atomicFields.push(`contradiction: ${input.contradiction}`);
+
   const frontmatter = [
     '---',
     `title: ${title}`,
@@ -153,7 +165,17 @@ export async function handleLearn(ctx: ToolContext, input: OracleLearnInput): Pr
     `created: ${dateStr}`,
     `source: ${source || 'Oracle Learn'}`,
     ...(project ? [`project: ${project}`] : []),
+    // Meta Alchemist fields
+    `quality_tier: ${qualityTier}`,
+    `promotion_level: ${promotionLevel}`,
+    ...(atomicFields.length > 0 ? atomicFields : []),
     '---',
+    '',
+    // Atomic structure if provided
+    ...(input.claim ? [`## Claim\n${input.claim}\n`] : []),
+    ...(input.mechanism ? [`## Mechanism\n${input.mechanism}\n`] : []),
+    ...(input.boundary ? [`## Boundary\n${input.boundary}\n`] : []),
+    ...(input.contradiction ? [`## Contradiction\n${input.contradiction}\n`] : []),
     '',
     `# ${title}`,
     '',
@@ -179,6 +201,19 @@ export async function handleLearn(ctx: ToolContext, input: OracleLearnInput): Pr
     origin: null,
     project,
     createdBy: 'arra_learn',
+    // Meta Alchemist Quality Gates (Phase 1)
+    qualityTier,
+    promotionLevel,
+    packetStructure: (input.claim || input.mechanism || input.boundary || input.contradiction)
+      ? JSON.stringify({
+          claim: input.claim || null,
+          mechanism: input.mechanism || null,
+          boundary: input.boundary || null,
+          contradiction: input.contradiction || null
+        })
+      : null,
+    usedInDecisions: 0,
+    averageRating: null,
   }).run();
 
   ctx.sqlite.prepare(`

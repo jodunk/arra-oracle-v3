@@ -1,0 +1,78 @@
+/* Avatar Component - OpenClaw Studio inspired */
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.avatar.circle {
+  border-radius: 50%;
+}
+
+.avatar.square {
+  border-radius: 8px;
+}
+
+.avatar:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.avatar.selected {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px var(--accent-blue);
+  transform: scale(1.02);
+}
+
+.avatar.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.avatar.svg {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Size variants */
+.avatar.sm {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.avatar.md {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+}
+
+.avatar.lg {
+  width: 48px;
+  height: 48px;
+  font-size: 16px;
+}
+
+.avatar.xl {
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+}
+
+.avatar.xxl {
+  width: 96px;
+  height: 96px;
+  font-size: 32px;
+}

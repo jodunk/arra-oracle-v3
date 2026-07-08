@@ -1,28 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Avatar } from '../components/Avatar';
 import styles from './Events.module.css';
 
-interface FeedEvent {
-  timestamp: string;
-  oracle: string;
-  host: string;
-  event: string;
-  project: string;
-  session_id: string;
-  message: string;
+interface Event {
+  id: string;
+  type: string;
+  data: any;
+  metadata: any;
+  timestamp: Date;
 }
 
-interface FeedResponse {
-  events: FeedEvent[];
-  total: number;
-  active_oracles?: string[];
+interface Projection {
+  name: string;
+  lastEventId: string;
+  state: any;
+  updatedAt: Date;
 }
 
-const EVENT_TYPES = ['all', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'UserPromptSubmit', 'SubagentStart', 'SubagentStop', 'TaskCompleted', 'SessionStart', 'SessionEnd', 'Stop', 'Notification'] as const;
+interface EventStats {
+  totalEvents: number;
+  eventsByType: Record<string, number>;
+  latestEventId: string;
+}
+
+const EVENT_TYPES = ['all', 'LEARNING_CREATED', 'LEARNING_UPDATED', 'RETROSPECTIVE_CREATED', 'RETROSPECTIVE_UPDATED', 'PATTERN_DISCOVERED', 'SUPERSERSION_LOGGED', 'SESSION_STARTED', 'SESSION_ENDED'] as const;
 type EventType = typeof EVENT_TYPES[number];
 
-function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
+function formatTimeAgo(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
@@ -36,33 +41,44 @@ function formatTimeAgo(dateString: string): string {
 }
 
 function getEventIcon(eventType: string): string {
-  switch (eventType?.toLowerCase()) {
-    case 'pretooluse': return '⚡';
-    case 'posttooluse': return '✅';
-    case 'posttoolusefailure': return '❌';
-    case 'userpromptsubmit': return '💬';
-    case 'subagentstart': return '🤖';
-    case 'subagentstop': return '✅';
-    case 'taskcompleted': return '🎉';
-    case 'sessionstart': return '🟢';
-    case 'sessionend': return '⏹️';
-    case 'stop': return '⏹️';
-    case 'notification': return '🔔';
+  switch (eventType) {
+    case 'LEARNING_CREATED': return '💡';
+    case 'LEARNING_UPDATED': return '🔄';
+    case 'RETROSPECTIVE_CREATED': return '📝';
+    case 'RETROSPECTIVE_UPDATED': return '📝';
+    case 'PATTERN_DISCOVERED': return '🔍';
+    case 'SUPERSERSION_LOGGED': return '🔄';
+    case 'SESSION_STARTED': return '🟢';
+    case 'SESSION_ENDED': return '⏹️';
     default: return '✨';
   }
 }
 
-export function Events() {
+function getEventColor(eventType: string): string {
+  switch (eventType) {
+    case 'LEARNING_CREATED': return '#10b981';
+    case 'LEARNING_UPDATED': return '#f59e0b';
+    case 'RETROSPECTIVE_CREATED': return '#3b82f6';
+    case 'RETROSPECTIVE_UPDATED': return '#6366f1';
+    case 'PATTERN_DISCOVERED': return '#8b5cf6';
+    case 'SUPERSERSION_LOGGED': return '#ef4444';
+    case 'SESSION_STARTED': return '#22c55e';
+    case 'SESSION_ENDED': return '#6b7280';
+    default: return '#64748b';
+  }
+}
+
+export default function Events() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [events, setEvents] = useState<FeedEvent[]>([]);
-  const [activeOracles, setActiveOracles] = useState<string[]>([]);
-  const [total, setTotal] = useState(0);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [stats, setStats] = useState<EventStats | null>(null);
+  const [projections, setProjections] = useState<Projection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState<'events' | 'projections' | 'stats'>('events');
 
   // URL-persisted filters
   const eventType = (searchParams.get('type') as EventType) || 'all';
-  const oracleFilter = searchParams.get('oracle') || '';
 
   function setEventType(type: EventType) {
     setSearchParams(prev => {
@@ -76,42 +92,22 @@ export function Events() {
     });
   }
 
-  function setOracleFilter(oracle: string) {
-    setSearchParams(prev => {
-      const params = new URLSearchParams(prev);
-      if (oracle) {
-        params.set('oracle', oracle);
-      } else {
-        params.delete('oracle');
-      }
-      return params;
-    });
-  }
-
   useEffect(() => {
-    loadEvents();
-  }, [eventType, oracleFilter]);
+    loadData();
+  }, [eventType, selectedTab]);
 
-  async function loadEvents() {
+  async function loadData() {
     setLoading(true);
     setError(null);
+
     try {
-      const params = new URLSearchParams();
-      params.set('limit', '100');
-      if (eventType !== 'all') {
-        params.set('event', eventType);
+      if (selectedTab === 'stats') {
+        await loadStats();
+      } else if (selectedTab === 'projections') {
+        await loadProjections();
+      } else {
+        await loadEvents();
       }
-      if (oracleFilter) {
-        params.set('oracle', oracleFilter);
-      }
-
-      const res = await fetch(`/api/feed?${params}`);
-      if (!res.ok) throw new Error('Failed to load events');
-
-      const data: FeedResponse = await res.json();
-      setEvents(data.events || []);
-      setTotal(data.total || 0);
-      setActiveOracles(data.active_oracles || []);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -119,123 +115,282 @@ export function Events() {
     }
   }
 
-  // Get unique oracles from events for filter dropdown
-  const uniqueOracles = [...new Set(events.map(e => e.oracle).filter(Boolean))];
+  async function loadEvents() {
+    const params = new URLSearchParams();
+    if (eventType !== 'all') {
+      params.set('type', eventType);
+    }
+    params.set('limit', '50');
 
-  if (loading && events.length === 0) {
-    return <div className={styles.loading}>Loading events...</div>;
+    const res = await fetch(`/api/events?${params}`);
+    if (!res.ok) throw new Error('Failed to load events');
+
+    const data = await res.json();
+    const eventsData: Event[] = data.events || [];
+
+    // Convert timestamps
+    setEvents(eventsData.map(e => ({
+      ...e,
+      timestamp: new Date(e.timestamp)
+    })));
+  }
+
+  async function loadStats() {
+    const res = await fetch('/api/events/stats');
+    if (!res.ok) throw new Error('Failed to load stats');
+
+    const data: EventStats = await res.json();
+    setStats(data);
+  }
+
+  async function loadProjections() {
+    const res = await fetch('/api/projections');
+    if (!res.ok) throw new Error('Failed to load projections');
+
+    const data = await res.json();
+    const projectionsData: Projection[] = data.projections || [];
+
+    // Convert timestamps
+    setProjections(projectionsData.map((p: any) => ({
+      ...p,
+      updatedAt: new Date(p.updatedAt)
+    })));
+  }
+
+  if (loading && events.length === 0 && stats === null) {
+    return <div className={styles.loading}>Loading...</div>;
   }
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>🔮 Events</h1>
+        <h1 className={styles.title}>🎯 Event Sourcing</h1>
         <p className={styles.subtitle}>
-          Real-time Oracle activity feed
-          {activeOracles.length > 0 && (
-            <span className={styles.activeCount}>
-              · {activeOracles.length} active
-            </span>
-          )}
+          Complete audit trail of Oracle knowledge changes
         </p>
       </header>
 
-      {/* Filters */}
-      <div className={styles.filters}>
-        <div className={styles.filterGroup}>
-          <label className={styles.filterLabel}>Event Type</label>
-          <div className={styles.filterButtons}>
-            {EVENT_TYPES.map(type => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setEventType(type)}
-                className={`${styles.filterBtn} ${eventType === type ? styles.active : ''}`}
-              >
-                {type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {uniqueOracles.length > 0 && (
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Oracle</label>
-            <select
-              value={oracleFilter}
-              onChange={(e) => setOracleFilter(e.target.value)}
-              className={styles.select}
-            >
-              <option value="">All Oracles</option>
-              {uniqueOracles.map(oracle => (
-                <option key={oracle} value={oracle}>{oracle}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* Stats */}
-      <div className={styles.stats}>
-        <span className={styles.statItem}>
-          <span className={styles.statValue}>{total}</span> events
-        </span>
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        <button
+          type="button"
+          className={`${styles.tab} ${selectedTab === 'events' ? styles.active : ''}`}
+          onClick={() => setSelectedTab('events')}
+        >
+          📝 Events
+        </button>
+        <button
+          type="button"
+          className={`${styles.tab} ${selectedTab === 'projections' ? styles.active : ''}`}
+          onClick={() => setSelectedTab('projections')}
+        >
+          🔄 Projections
+        </button>
+        <button
+          type="button"
+          className={`${styles.tab} ${selectedTab === 'stats' ? styles.active : ''}`}
+          onClick={() => setSelectedTab('stats')}
+        >
+          📊 Stats
+        </button>
       </div>
 
       {/* Error */}
       {error && (
         <div className={styles.error}>
           <p>{error}</p>
-          <button onClick={loadEvents} className={styles.retryBtn}>Retry</button>
+          <button onClick={loadData} className={styles.retryBtn}>Retry</button>
         </div>
       )}
 
-      {/* Events List */}
-      <div className={styles.eventsList}>
-        {events.length === 0 && !loading ? (
-          <div className={styles.empty}>
-            <p>No events found</p>
-            <p className={styles.emptyHint}>
-              Events are logged to ~/.arra-oracle-v3/feed.log
-            </p>
-          </div>
-        ) : (
-          events.map((event, i) => (
-            <div key={`${event.timestamp}-${i}`} className={styles.eventCard}>
-              <div className={styles.eventIcon}>
-                {getEventIcon(event.event)}
-              </div>
-              <div className={styles.eventContent}>
-                <div className={styles.eventHeader}>
-                  <span className={styles.oracleName}>{event.oracle || 'Unknown'}</span>
-                  <span className={styles.eventType}>{event.event}</span>
-                  <span className={styles.eventTime}>{formatTimeAgo(event.timestamp)}</span>
-                </div>
-                {event.message && (
-                  <p className={styles.eventMessage}>{event.message}</p>
-                )}
-                <div className={styles.eventMeta}>
-                  {event.project && (
-                    <span className={styles.metaItem}>📁 {event.project}</span>
-                  )}
-                  {event.host && (
-                    <span className={styles.metaItem}>💻 {event.host}</span>
-                  )}
-                  {event.session_id && (
-                    <span className={styles.metaItem}>🔗 {event.session_id.slice(0, 8)}</span>
-                  )}
-                </div>
+      {/* EVENTS TAB */}
+      {selectedTab === 'events' && (
+        <>
+          {/* Filters */}
+          <div className={styles.filters}>
+            <div className={styles.filterGroup}>
+              <label className={styles.filterLabel}>Event Type</label>
+              <div className={styles.filterButtons}>
+                {EVENT_TYPES.map(type => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setEventType(type)}
+                    className={`${styles.filterBtn} ${eventType === type ? styles.active : ''}`}
+                  >
+                    {type === 'all' ? 'All' : type.replace(/_/g, ' ')}
+                  </button>
+                ))}
               </div>
             </div>
-          ))
-        )}
-      </div>
+          </div>
 
-      {/* Load More */}
-      {events.length > 0 && events.length < total && (
-        <button onClick={loadEvents} className={styles.loadMore}>
-          Load More ({total - events.length} remaining)
-        </button>
+          {/* Events List */}
+          <div className={styles.eventsList}>
+            {events.length === 0 && !loading ? (
+              <div className={styles.empty}>
+                <p>No events found</p>
+                <p className={styles.emptyHint}>
+                  Events are created when learnings, patterns, or retrospectives are added
+                </p>
+              </div>
+            ) : (
+              events.map((event) => (
+                <div key={event.id} className={styles.eventCard}>
+                  <div className={styles.eventIcon} style={{ color: getEventColor(event.type) }}>
+                    {getEventIcon(event.type)}
+                  </div>
+                  <div className={styles.eventContent}>
+                    <div className={styles.eventHeader}>
+                      <span className={styles.eventType}>{event.type.replace(/_/g, ' ')}</span>
+                      <span className={styles.eventId}>{event.id.slice(0, 8)}...</span>
+                      <span className={styles.eventTime}>{formatTimeAgo(event.timestamp)}</span>
+                    </div>
+
+                    {/* Event Data Preview */}
+                    {event.data && (
+                      <div className={styles.eventData}>
+                        <details>
+                          <summary style={{ cursor: 'pointer', color: '#666' }}>
+                            Data Preview
+                          </summary>
+                          <pre style={{
+                            background: '#f5f5f5',
+                            padding: '8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            overflow: 'auto',
+                            marginTop: '8px'
+                          }}>
+                            {JSON.stringify(event.data, null, 2)}
+                          </pre>
+                        </details>
+                      </div>
+                    )}
+
+                    {/* Metadata */}
+                    {event.metadata && (
+                      <div className={styles.eventMeta}>
+                        {event.metadata.agentId && (
+                          <div className={styles.metaItem}>
+                            <Avatar
+                              name={event.metadata.agentId}
+                              size={24}
+                              variant="circle"
+                            />
+                            <span>{event.metadata.agentId}</span>
+                          </div>
+                        )}
+                        {event.metadata.userId && (
+                          <div className={styles.metaItem}>
+                            <Avatar
+                              name={event.metadata.userId}
+                              size={24}
+                              variant="circle"
+                            />
+                            <span>{event.metadata.userId}</span>
+                          </div>
+                        )}
+                        {event.data.project && (
+                          <span className={styles.metaItem}>📁 {event.data.project}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
+
+      {/* PROJECTIONS TAB */}
+      {selectedTab === 'projections' && (
+        <div className={styles.projectionsList}>
+          {projections.length === 0 && !loading ? (
+            <div className={styles.empty}>
+              <p>No projections found</p>
+              <p className={styles.emptyHint}>
+                Projections are read-optimized views built from events
+              </p>
+            </div>
+          ) : (
+            projections.map((projection) => (
+              <div key={projection.name} className={styles.projectionCard}>
+                <div className={styles.projectionHeader}>
+                  <h3 className={styles.projectionName}>{projection.name}</h3>
+                  <span className={styles.projectionTime}>
+                    Updated {formatTimeAgo(projection.updatedAt)}
+                  </span>
+                </div>
+                <div className={styles.projectionInfo}>
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Last Event:</span>
+                    <span className={styles.infoValue}>{projection.lastEventId?.slice(0, 8)}...</span>
+                  </div>
+                </div>
+                <div className={styles.projectionState}>
+                  <details>
+                    <summary style={{ cursor: 'pointer' }}>State Preview</summary>
+                    <pre style={{
+                      background: '#f5f5f5',
+                      padding: '12px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      overflow: 'auto',
+                      maxHeight: '300px'
+                    }}>
+                      {JSON.stringify(projection.state, null, 2)}
+                    </pre>
+                  </details>
+                </div>
+                <div className={styles.projectionActions}>
+                  <button
+                    onClick={async () => {
+                      await fetch(`/api/projections/${projection.name}/rebuild`, { method: 'POST' });
+                      loadProjections();
+                    }}
+                    className={styles.actionBtn}
+                  >
+                    🔄 Rebuild
+                  </button>
+                  <button
+                    onClick={async () => {
+                      await fetch(`/api/projections/${projection.name}/snapshot`, { method: 'POST' });
+                      loadProjections();
+                    }}
+                    className={styles.actionBtn}
+                  >
+                    📸 Snapshot
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* STATS TAB */}
+      {selectedTab === 'stats' && stats && (
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <div className={styles.statValue}>{stats.totalEvents.toLocaleString()}</div>
+            <div className={styles.statLabel}>Total Events</div>
+          </div>
+
+          <div className={styles.statsByType}>
+            <h3 className={styles.statsTitle}>Events by Type</h3>
+            {Object.entries(stats.eventsByType).map(([type, count]) => (
+              <div key={type} className={styles.typeStat}>
+                <span className={styles.typeIcon} style={{ color: getEventColor(type) }}>
+                  {getEventIcon(type)}
+                </span>
+                <span className={styles.typeName}>{type.replace(/_/g, ' ')}</span>
+                <span className={styles.typeCount}>{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

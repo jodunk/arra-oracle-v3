@@ -76,6 +76,7 @@ export function registerFileRoutes(app: Hono) {
         return c.text(content);
       }
 
+      // Fallback 1: Try vault path
       const vault = getVaultPsiRoot();
       if ('path' in vault) {
         const vaultFullPath = path.join(vault.path, filePath);
@@ -84,6 +85,56 @@ export function registerFileRoutes(app: Hono) {
         if (realVaultPath.startsWith(realVaultRoot) && fs.existsSync(vaultFullPath)) {
           const content = fs.readFileSync(vaultFullPath, 'utf-8');
           return c.text(content);
+        }
+      }
+
+      // Fallback 2: Search in nested ψ paths within REPO_ROOT
+      // This handles cases where files are in ψ/active/virtual-office/ψ/ instead of ψ/
+      if (filePath.startsWith('ψ/')) {
+        const nestedPaths = [
+          path.join(REPO_ROOT, 'psi', 'active', 'virtual-office', filePath),  // psi/active/virtual-office/psi/...
+          path.join(REPO_ROOT, 'ψ', 'active', 'virtual-office', filePath),    // ψ/active/virtual-office/ψ/...
+          path.join(REPO_ROOT, 'active', 'virtual-office', filePath),        // active/virtual-office/psi/...
+        ];
+        for (const altPath of nestedPaths) {
+          if (fs.existsSync(altPath)) {
+            const content = fs.readFileSync(altPath, 'utf-8');
+            return c.text(content);
+          }
+        }
+      }
+
+      // Fallback 3: Try recursive search under REPO_ROOT for files with unique names
+      // Only for markdown files to avoid performance issues
+      if (filePath.endsWith('.md')) {
+        const fileName = path.basename(filePath);
+        function searchDir(dir: string, depth: number = 0): string | null {
+          if (depth > 5) return null; // Limit recursion depth
+          try {
+            const items = fs.readdirSync(dir);
+            for (const item of items) {
+              const itemPath = path.join(dir, item);
+              const stat = fs.lstatSync(itemPath);
+              if (stat.isDirectory() && !stat.isSymbolicLink()) {
+                const result = searchDir(itemPath, depth + 1);
+                if (result) return result;
+              } else if (item === fileName) {
+                return itemPath;
+              }
+            }
+          } catch {
+            // Ignore permission errors
+          }
+          return null;
+        }
+        const foundPath = searchDir(REPO_ROOT);
+        if (foundPath) {
+          const realPath = path.resolve(foundPath);
+          const realRepoRoot = fs.realpathSync(REPO_ROOT);
+          if (realPath.startsWith(realRepoRoot)) {
+            const content = fs.readFileSync(foundPath, 'utf-8');
+            return c.text(content);
+          }
         }
       }
 
